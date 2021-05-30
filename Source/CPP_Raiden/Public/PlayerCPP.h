@@ -35,4 +35,13 @@ public:
 	UPROPERTY(VisibleAnywhere,Category = "Body")
 	class UStaticMeshComponent* MeshComp;
 
+	//사용자 입력에 따라 상하좌우 이동
+	//필요속성 : 이동속도, 이동방향
+	float MoveSpeed = 500;
+	float h = 0;
+	float v = 0;
+	//필요기능 : 상하,좌우 입력 받는 기능 (binding)
+	void InputHorizontal(float Value);
+	void InputVertical(float Value);
+
 };
