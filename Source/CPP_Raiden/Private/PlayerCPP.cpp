@@ -50,6 +50,10 @@ void APlayerCPP::Tick(float DeltaTime)
 	FVector dir(0, h, v);
 	dir.Normalize();
 	SetActorLocation(GetActorLocation() + dir * MoveSpeed * DeltaTime);
+
+	//회전
+	FRotator Rdir(0, 1, 0);
+	SetActorRotation(GetActorRotation() + Rdir * 300 * DeltaTime);
 }
 
 //사용자의 입력매핑과 처리할 함수를 묶어주는(bind) 역할을 하는 함수
