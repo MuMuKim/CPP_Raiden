@@ -35,6 +35,19 @@ public:
 	UPROPERTY(VisibleAnywhere,Category = "Body")
 	class UStaticMeshComponent* MeshComp;
 
+	//총구
+	UPROPERTY(VisibleAnywhere,Category = "Body")
+	class UArrowComponent* FirePosition;
+
+	//총알공장(Bullet Class를 가져와 쓸수있음)
+	UPROPERTY(EditAnywhere, Category = "Setting")
+	TSubclassOf<class ABulletCPP> BulletFactory;
+
+	//총알Sound
+	UPROPERTY(EditAnywhere,Category="Audio")
+	class USoundBase* BulletSound;
+
+
 	//사용자 입력에 따라 상하좌우 이동
 	//필요속성 : 이동속도, 이동방향
 	float MoveSpeed = 500;
@@ -44,4 +57,6 @@ public:
 	void InputHorizontal(float Value);
 	void InputVertical(float Value);
 
+	//사용자가 발사버튼을 누르면 Bullet을 발사하는 기능
+	void Fire();
 };

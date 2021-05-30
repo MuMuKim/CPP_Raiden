@@ -4,6 +4,9 @@
 #include "PlayerCPP.h"
 #include <Components/BoxComponent.h>
 #include <Components/StaticMeshComponent.h>
+#include <Components/ArrowComponent.h>
+#include "BulletCPP.h"
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -22,6 +25,12 @@ APlayerCPP::APlayerCPP()
 	//외관(루트의 자식으로)
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComp->SetupAttachment(BoxComp);
+
+	//총구(루트의 자식으로)
+	FirePosition = CreateDefaultSubobject<UArrowComponent>(TEXT("FirePosition"));
+	FirePosition->SetupAttachment(RootComponent);
+
+	//총알공장
 
 }
 
@@ -51,6 +60,9 @@ void APlayerCPP::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	//키입력에 따른 바인딩
 	PlayerInputComponent->BindAxis("Horizontal", this, &APlayerCPP::InputHorizontal);
 	PlayerInputComponent->BindAxis("Vertical", this, &APlayerCPP::InputVertical);
+
+	//총알발사 키입력 (IE_Pressed 누르는 순간에)
+	PlayerInputComponent->BindAction("Fire",IE_Pressed, this, &APlayerCPP::Fire);
 }
 //사용자가 좌우 키를 누르면 실행되는 함수
 void APlayerCPP::InputHorizontal(float Value)
@@ -62,5 +74,24 @@ void APlayerCPP::InputHorizontal(float Value)
 void APlayerCPP::InputVertical(float Value)
 {
 	v = Value;
+}
+
+void APlayerCPP::Fire()
+{
+	//총알공장에서 총알을 하나 만들고, 총알을 총구에 배치하고 싶다
+	if (BulletFactory)
+	{
+		//spwan
+		FActorSpawnParameters Prams;
+		//항상 이자리에 다른 물체가 있더라도 무조건 액터를 생성해라
+		Prams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		//총구위치에 총알공장에서 만든 총알을 배치
+		//GetWorld안에 있는 스폰액터라는 함수안에 무엇을 만들지(Bullet),파라미터로 총알공장,어디에 배치될지,
+		GetWorld()->SpawnActor<ABulletCPP>(BulletFactory, FirePosition->GetComponentTransform(), Prams);
+
+		//총알발사 사운드
+		UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
+	}
 }
 
