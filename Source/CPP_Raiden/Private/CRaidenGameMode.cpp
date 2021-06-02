@@ -5,5 +5,6 @@
 
 ACRaidenGameMode::ACRaidenGameMode()
 {
+	//Player가 들어가있음.
 	DefaultPawnClass = NULL;
 }
