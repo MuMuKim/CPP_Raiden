@@ -6,6 +6,7 @@
 #include <Components/StaticMeshComponent.h>
 #include "PlayerCPP.h"
 #include <EngineUtils.h>
+#include <Kismet/GameplayStatics.h>
 // Sets default values
 AEnemyCPP::AEnemyCPP()
 {
@@ -55,6 +56,22 @@ void AEnemyCPP::Tick(float DeltaTime)
 	//살아가면서 계속 그 방향으로 이동하고 싶다
 	//P = P0 + vt, Sweep
 	SetActorLocation(GetActorLocation() + Dir * DeltaTime * MoveSpeed, true);
+}
+
+void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	//부딪힌 대상이 Enemy면 함수를 실행하지 않는다
+	auto Enemy = Cast<AEnemyCPP>(OtherActor);
+	if (Enemy != nullptr)
+	{
+		return;
+	}
+
+	//폭발효과 생성
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionFactory, GetActorTransform());
+
+	OtherActor->Destroy();
+	Destroy();
 }
 
 
