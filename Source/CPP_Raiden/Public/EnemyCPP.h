@@ -37,8 +37,15 @@ public:
 	UPROPERTY(EditAnywhere,Category = "Setting")
 	float MoveSpeed = 700;
 	//이동방향
-	FVector Dir;
+	FVector Dir; 
 	//확률
 	UPROPERTY(EditAnywhere,Category = "Setting")
 	int32 TraceRate = 50;
+
+	//적이 다른 물체와 충돌했을 때 처리를 하고 싶다.
+	//virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	//다른 물체와 충돌했을 때 폭발 효과를 발생시키고 싶다
+	UPROPERTY(EditAnywhere, Category = "Setting")
+	class UParticleSystem* ExplosionFactory;
 };

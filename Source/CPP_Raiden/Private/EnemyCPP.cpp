@@ -3,7 +3,6 @@
 
 #include "EnemyCPP.h"
 #include <Components/BoxComponent.h>
-
 #include <Components/StaticMeshComponent.h>
 #include "PlayerCPP.h"
 #include <EngineUtils.h>
@@ -57,4 +56,5 @@ void AEnemyCPP::Tick(float DeltaTime)
 	//P = P0 + vt, Sweep
 	SetActorLocation(GetActorLocation() + Dir * DeltaTime * MoveSpeed, true);
 }
+
 
