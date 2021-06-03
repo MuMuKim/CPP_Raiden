@@ -7,6 +7,7 @@
 #include "PlayerCPP.h"
 #include <EngineUtils.h>
 #include <Kismet/GameplayStatics.h>
+#include "DestroyZoneCPP.h"
 // Sets default values
 AEnemyCPP::AEnemyCPP()
 {
@@ -60,13 +61,17 @@ void AEnemyCPP::Tick(float DeltaTime)
 
 void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	//부딪힌 대상이 Enemy면 함수를 실행하지 않는다
+	//부딪힌 대상이 Enemy,DestroyZone이면 함수를 실행하지 않는다
 	auto Enemy = Cast<AEnemyCPP>(OtherActor);
-	if (Enemy != nullptr)
+	auto DZ = Cast<ADestroyZoneCPP>(OtherActor);
+	if (Enemy != nullptr || DZ != nullptr)
 	{
 		return;
 	}
-
+	/*if (OtherActor->GetWorld()->GetName().Contains(TEXT("DestroyZone")))
+	{
+		return;
+	}*/
 	//폭발효과 생성
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionFactory, GetActorTransform());
 
