@@ -107,17 +107,20 @@ void APlayerCPP::Fire()
 	{
 		//GameMode의 GetBullet함수를 사용해 총알을 가져온다
 		auto Bullet = GameMode->GetBullet();
+		auto Bullet2 = GameMode->GetBullet();
 		//방어코드
-		if (Bullet == nullptr)
+		if (Bullet == nullptr && Bullet2 == nullptr)
 		{
 			return;
 		}
 
 		//가져온 총알을 활성화 시켜준다
 		GameMode->SetBulletActive(Bullet, true);
+		GameMode->SetBulletActive(Bullet2, true);
 
 		//위치시킨다
-		Bullet->SetActorTransform(FirePosition->GetComponentTransform());
+		Bullet->SetActorLocation(FirePosition->GetComponentLocation()+FVector(0,-40,0));
+		Bullet2->SetActorLocation(FirePosition->GetComponentLocation()+FVector(0,40,0));
 		//총알발사 사운드
 		UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
 	}

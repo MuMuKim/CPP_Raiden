@@ -120,9 +120,9 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 	// 부딪힌 액터가 총알이라면 다시 탄창(Pool)에 넣어준다
 	auto Bullet = Cast<ABulletCPP>(OtherActor);
 
-	if (Bullet)
+	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+	if (Bullet && GameMode)
 	{
-		auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
 		//재장전
 		GameMode->ADDBullet(Bullet);
 	}
