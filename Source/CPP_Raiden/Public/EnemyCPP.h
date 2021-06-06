@@ -57,4 +57,8 @@ public:
 	//Player를 담을 변수
 	UPROPERTY()
 	class AActor* Target;
+
+	//Component 충돌을 위한 함수(Actor 충돌 말고)
+	//UFUNCTION()
+	//void OnTrigerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

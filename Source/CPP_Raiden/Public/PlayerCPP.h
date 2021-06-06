@@ -40,8 +40,8 @@ public:
 	class UArrowComponent* FirePosition;
 
 	//총알공장(Bullet Class를 가져와 쓸수있음)
-	UPROPERTY(EditAnywhere, Category = "Setting")
-	TSubclassOf<class ABulletCPP> BulletFactory;
+	/*UPROPERTY(EditAnywhere, Category = "Setting")
+	TSubclassOf<class ABulletCPP> BulletFactory;*/
 
 	//총알Sound
 	UPROPERTY(EditAnywhere,Category="Audio")

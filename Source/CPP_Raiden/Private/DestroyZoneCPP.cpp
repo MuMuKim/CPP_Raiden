@@ -2,6 +2,9 @@
 
 
 #include "DestroyZoneCPP.h"
+#include "CRaidenGameMode.h"
+#include "BulletCPP.h"
+#include "PlayerCPP.h"
 
 // Sets default values
 ADestroyZoneCPP::ADestroyZoneCPP()
@@ -27,5 +30,23 @@ void ADestroyZoneCPP::Tick(float DeltaTime)
 
 void ADestroyZoneCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	//부딪힌 대상이 Player라면 함수를 실행시키지 않는다
+	APlayerCPP* Player = Cast<APlayerCPP>(OtherActor);
+	if (Player != nullptr)
+	{
+		return;
+	}
+
+	// 부딪힌 액터가 총알이라면 다시 탄창(Pool)에 넣어준다
+	auto Bullet = Cast<ABulletCPP>(OtherActor);
+
+	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (Bullet && IsValid(Bullet))
+	{
+		//재장전
+		GameMode->ADDBullet(Bullet);
+	}
+
 	OtherActor->Destroy();
 }

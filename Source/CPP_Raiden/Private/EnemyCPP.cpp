@@ -8,6 +8,8 @@
 #include <EngineUtils.h>
 #include <Kismet/GameplayStatics.h>
 #include "DestroyZoneCPP.h"
+#include <Components/PrimitiveComponent.h>
+#include "CRaidenGameMode.h"
 // Sets default values
 AEnemyCPP::AEnemyCPP()
 {
@@ -17,6 +19,9 @@ AEnemyCPP::AEnemyCPP()
 	//몸체
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	RootComponent = BoxComp;
+	//컴포넌트 충돌을 위한 기능
+	//BoxComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCPP::OnTrigerEnter);
+	
 	//외관
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComp->SetupAttachment(BoxComp);
@@ -46,9 +51,10 @@ void AEnemyCPP::BeginPlay()
 	//애초에 처음방향은 아래방향
 	Dir = FVector(0, 0, -1);
 
-	//50%확률로 타겟방향으로 가게하기
+	// 타겟이 있고, 타겟이 유효하다면(유효성 검사: nullptr, IsValid)
 	if (Target && IsValid(Target))
 	{
+		//50%확률로 타겟방향으로 가게하기
 		if (Ran <= 50)
 		{
 			// target - me
@@ -95,7 +101,6 @@ void AEnemyCPP::Tick(float DeltaTime)
 	//P = P0 + vt, Sweep
 	SetActorLocation(GetActorLocation() + Dir * DeltaTime * MoveSpeed, true);
 }
-
 void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	//부딪힌 대상이 Enemy,DestroyZone이면 함수를 실행하지 않는다
@@ -105,18 +110,29 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		return;
 	}
-	/*if (OtherActor->GetWorld()->GetName().Contains(TEXT("DestroyZone")))
-	{
-		return;
-	}*/
-	//폭발효과 생성
+
+	//폭발효과
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionFactory, GetActorTransform());
 
 	//폭발사운드
 	UGameplayStatics::PlaySound2D(GetWorld(), ExSound);
 
-	OtherActor->Destroy();
+	// 부딪힌 액터가 총알이라면 다시 탄창(Pool)에 넣어준다
+	auto Bullet = Cast<ABulletCPP>(OtherActor);
+
+	if (Bullet)
+	{
+		auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+		//재장전
+		GameMode->ADDBullet(Bullet);
+	}
+	else
+	{
+		// Player임
+		OtherActor->Destroy();
+	}
 	Destroy();
 }
-
+//Componunt 충돌 함수
+//void AEnemyCPP::OnTrigerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 

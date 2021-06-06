@@ -7,6 +7,8 @@
 #include <Components/ArrowComponent.h>
 #include "BulletCPP.h"
 #include <Kismet/GameplayStatics.h>
+#include "CPP_RaidenGameModeBase.h"
+#include "CRaidenGameMode.h"
 
 
 // Sets default values
@@ -85,17 +87,37 @@ void APlayerCPP::InputVertical(float Value)
 void APlayerCPP::Fire()
 {
 	//총알공장에서 총알을 하나 만들고, 총알을 총구에 배치하고 싶다
-	if (BulletFactory)
+	//if (BulletFactory)
+	//{
+	//	//spwan
+	//	FActorSpawnParameters Prams;
+	//	//항상 이자리에 다른 물체가 있더라도 무조건 액터를 생성해라
+	//	Prams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	//	//총구위치에 총알공장에서 만든 총알을 배치
+	//	//GetWorld안에 있는 스폰액터라는 함수안에 무엇을 만들지(Bullet),파라미터로 총알공장,어디에 배치될지,
+	//	GetWorld()->SpawnActor<ABulletCPP>(BulletFactory, FirePosition->GetComponentTransform(), Prams);
+
+	//	//총알발사 사운드
+	//	UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
+	//}
+
+	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
-		//spwan
-		FActorSpawnParameters Prams;
-		//항상 이자리에 다른 물체가 있더라도 무조건 액터를 생성해라
-		Prams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		//GameMode의 GetBullet함수를 사용해 총알을 가져온다
+		auto Bullet = GameMode->GetBullet();
+		//방어코드
+		if (Bullet == nullptr)
+		{
+			return;
+		}
 
-		//총구위치에 총알공장에서 만든 총알을 배치
-		//GetWorld안에 있는 스폰액터라는 함수안에 무엇을 만들지(Bullet),파라미터로 총알공장,어디에 배치될지,
-		GetWorld()->SpawnActor<ABulletCPP>(BulletFactory, FirePosition->GetComponentTransform(), Prams);
+		//가져온 총알을 활성화 시켜준다
+		GameMode->SetBulletActive(Bullet, true);
 
+		//위치시킨다
+		Bullet->SetActorTransform(FirePosition->GetComponentTransform());
 		//총알발사 사운드
 		UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
 	}
