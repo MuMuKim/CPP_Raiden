@@ -3,6 +3,7 @@
 
 #include "EnemyManagerCPP.h"
 #include "EnemyCPP.h"
+#include "CRaidenGameMode.h"
 
 // Sets default values
 AEnemyManagerCPP::AEnemyManagerCPP()
@@ -23,8 +24,16 @@ void AEnemyManagerCPP::BeginPlay()
 void AEnemyManagerCPP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//생성시간이 되면 Enemy를 만들고 싶다
 
+	//Playing상태가 아니라면 함수를 끝낸다(실행시키지 않는다)
+	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode->GetState() != EGameState::Playing)
+	{
+		return;
+	}
+
+	//생성시간이 되면 Enemy를 만들고 싶다
 	CurrentTime += DeltaTime;
 
 	if (CurrentTime > CreateTime)

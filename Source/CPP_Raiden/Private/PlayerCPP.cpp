@@ -50,6 +50,14 @@ void APlayerCPP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//상태가 Playing이 아니라면 실행하지 않게한다.
+	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode->GetState() != EGameState::Playing)
+	{
+		return;
+	}
+
 	//사용자가 입력한 방향으로 이동하고 싶다.
 	FVector dir(0, h, v);
 	dir.Normalize();
@@ -103,13 +111,19 @@ void APlayerCPP::Fire()
 	//}
 
 	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
+
+	//Playing 상태가 아니라면 함수를 끝낸다(실행시키지 않는다)
+	if (GameMode->GetState() != EGameState::Playing)
+	{
+		return;
+	}
 	if (GameMode)
 	{
 		//GameMode의 GetBullet함수를 사용해 총알을 가져온다
 		auto Bullet = GameMode->GetBullet();
 		auto Bullet2 = GameMode->GetBullet();
-		//방어코드
-		if (Bullet == nullptr && Bullet2 == nullptr)
+		//방어코드(둘중 하나라도 Null이라면 리턴)
+		if (Bullet == nullptr || Bullet2 == nullptr)
 		{
 			return;
 		}

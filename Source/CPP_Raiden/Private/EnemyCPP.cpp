@@ -129,6 +129,13 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 	else
 	{
 		// Player임
+		// 재차확인
+		auto Player = Cast<APlayerCPP>(OtherActor);
+		if (Player)
+		{
+			//상태를 GameOver로 만든다
+			GameMode->SetState(EGameState::GameOver);
+		}
 		OtherActor->Destroy();
 	}
 	Destroy();

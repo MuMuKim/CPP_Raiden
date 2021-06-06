@@ -8,9 +8,16 @@
 #include <GameFramework/Actor.h>
 #include "CRaidenGameMode.generated.h"
 
-/**
- * 
- */
+//게임의 상태제어
+//enum = 열거형
+UENUM(BlueprintType)
+enum class EGameState : uint8
+{
+	Ready UMETA(ThisPlayName = "READY_STATE"),
+	Playing UMETA(ThisPlayName = "Playing_STATE"),
+	GameOver UMETA(ThisPlayName = "GameOver_STATE")
+};
+
 UCLASS()
 class CPP_RAIDEN_API ACRaidenGameMode : public AGameModeBase
 {
@@ -18,6 +25,15 @@ class CPP_RAIDEN_API ACRaidenGameMode : public AGameModeBase
 	
 public:
 	ACRaidenGameMode();
+	virtual void Tick(float DeltaSeconds) override;
+
+	//State 함수
+	void ReadyPage(float DeltaSeconds);
+	void PlayingPage();
+	void GameOverPage();
+
+	//GameMode가 제공해주는 함수(Begin보다 먼저 호출)
+	virtual void InitGameState() override;
 
 	virtual void BeginPlay() override;
 
@@ -42,5 +58,32 @@ public:
 	UPROPERTY(EditAnywhere,Category = "BulletFactory")
 	TSubclassOf<class ABulletCPP> BulletFactory;
 
-	
+	//PlayerFactory
+	UPROPERTY(EditAnywhere, Category = "PlayerFactory")
+	TSubclassOf<class APlayerCPP> PlayerFactory;
+
+	//Screen에 상태를 보여주기 위한 함수
+	UFUNCTION(BluePrintImplementableEvent,Category = "PrintLog")
+	void PrintEnumDeta(EGameState value);
+public:
+	//캡슐화된 MState를 가져오기 위한 함수
+	EGameState GetState()
+	{
+		return MState;
+	}
+	//캡슐화된 MState를 수정하기 위한 함수
+	EGameState SetState(EGameState s)
+	{
+		return MState = s;
+	}
+
+private:
+	//상태변화를 관리하는 변수
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "State", meta = (AllowPrivateAccess = ture))
+	EGameState MState = EGameState::Ready;
+	//경과시간이 되면 ReadyPage -> PlayingPage에 필요한 속성
+	UPROPERTY(EditAnywhere, Category = "State", meta = (AllowPrivateAccess = ture))
+	float ReadyTime = 2;
+	UPROPERTY()
+	float CrruntTime = 0;
 };
