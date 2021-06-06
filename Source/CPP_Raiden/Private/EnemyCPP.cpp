@@ -75,6 +75,9 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 	//气惯瓤苞 积己
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionFactory, GetActorTransform());
 
+	//气惯荤款靛
+	UGameplayStatics::PlaySound2D(GetWorld(), ExSound);
+
 	OtherActor->Destroy();
 	Destroy();
 }

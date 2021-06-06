@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include <Sound/SoundBase.h>
 #include "EnemyCPP.generated.h"
 
 UCLASS()
@@ -48,4 +49,8 @@ public:
 	//다른 물체와 충돌했을 때 폭발 효과를 발생시키고 싶다
 	UPROPERTY(EditAnywhere, Category = "Setting")
 	class UParticleSystem* ExplosionFactory;
+
+	//폭발사운드
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	class USoundBase* ExSound;
 };
