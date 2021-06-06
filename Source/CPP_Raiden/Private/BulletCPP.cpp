@@ -17,7 +17,8 @@ ABulletCPP::ABulletCPP()
 	//외관
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComp->SetupAttachment(BoxComp);
-
+	//Root와 겹치지않게 자식 Collision 없애기
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned

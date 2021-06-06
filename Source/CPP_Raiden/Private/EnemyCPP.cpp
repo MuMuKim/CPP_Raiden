@@ -20,6 +20,8 @@ AEnemyCPP::AEnemyCPP()
 	//외관
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComp->SetupAttachment(BoxComp);
+	//Root와 겹치지않게 자식 Collision 없애기
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
 }
 
@@ -27,32 +29,67 @@ AEnemyCPP::AEnemyCPP()
 void AEnemyCPP::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// 태어날 때 한번 방향을 구한다
-	int32 Ran = FMath::RandRange(1, 100);
-	
-	if (Ran <= TraceRate)
+
+	//타겟(Player)을 담을 그릇(배열)
+	TArray<AActor*> objs;
+	//월드상에 Actor을 찾아넣기 (배열로 담아야함)
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerCPP::StaticClass(), objs);
+	//actor라는 임시변수에 objs의 담긴 자료만큼 돌아 넣는다
+	for (AActor* actor : objs)
 	{
-		//타겟방향구하기
-		
-		//월드에서 player찾기
-		for (TActorIterator<APlayerCPP> it(GetWorld()); it; ++it)
+		Target = actor;
+	}
+	
+	// 50%확률을 위한 랜덤기능
+	int32 Ran = FMath::RandRange(1, 100);
+
+	//애초에 처음방향은 아래방향
+	Dir = FVector(0, 0, -1);
+
+	//50%확률로 타겟방향으로 가게하기
+	if (Target && IsValid(Target))
+	{
+		if (Ran <= 50)
 		{
-			Dir = it->GetActorLocation() - GetActorLocation();
+			// target - me
+			Dir = Target->GetActorLocation() - GetActorLocation();
 		}
 	}
-	else
-	{
-		//아래방향
-		Dir = FVector(0, 0, -1);
-	}
 	Dir.Normalize();
+	
+	//-----------------------------------------------동영상 방법(빠르고 좋음)
+	//if (Ran <= TraceRate)
+	//{
+	//	//타겟방향구하기
+	//	
+	//	//월드에서 player찾기
+	//	for (TActorIterator<APlayerCPP> it(GetWorld()); it; ++it)
+	//	{
+	//		Dir = it->GetActorLocation() - GetActorLocation();
+	//	}
+	//}
+	//else
+	//{
+	//	//아래방향
+	//	Dir = FVector(0, 0, -1);
+	//}
+	//Dir.Normalize();
 }
 
 // Called every frame
 void AEnemyCPP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	/*if (Target && IsValid(Target))
+	{
+		Dir = Target->GetActorLocation() - GetActorLocation();
+	}
+	else
+	{
+		Dir = FVector(0, 0, -1);
+	}
+	Dir.Normalize();*/
 
 	//살아가면서 계속 그 방향으로 이동하고 싶다
 	//P = P0 + vt, Sweep

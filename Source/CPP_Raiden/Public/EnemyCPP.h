@@ -53,4 +53,8 @@ public:
 	//폭발사운드
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	class USoundBase* ExSound;
+
+	//Player를 담을 변수
+	UPROPERTY()
+	class AActor* Target;
 };

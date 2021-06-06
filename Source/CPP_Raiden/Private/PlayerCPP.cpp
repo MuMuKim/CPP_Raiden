@@ -25,6 +25,8 @@ APlayerCPP::APlayerCPP()
 	//외관(루트의 자식으로)
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComp->SetupAttachment(BoxComp);
+	//Root와 겹치지않게 자식 Collision 없애기
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//총구(루트의 자식으로)
 	FirePosition = CreateDefaultSubobject<UArrowComponent>(TEXT("FirePosition"));
