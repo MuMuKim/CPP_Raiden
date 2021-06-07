@@ -121,10 +121,17 @@ void APlayerCPP::Fire()
 	{
 		//GameMode의 GetBullet함수를 사용해 총알을 가져온다
 		auto Bullet = GameMode->GetBullet();
-		auto Bullet2 = GameMode->GetBullet();
-		//방어코드(둘중 하나라도 Null이라면 리턴)
-		if (Bullet == nullptr || Bullet2 == nullptr)
+		//방어코드
+		if (Bullet == nullptr)
 		{
+			return;
+		}
+		//두번째 총알을 가져올 때 탄창에 더이상 총알이 없다면
+		//발사할 수 없기 때문에 첫번째 가져온 총알을 반납한다.
+		auto Bullet2 = GameMode->GetBullet();
+		if (Bullet2 == nullptr)
+		{
+			GameMode->ADDBullet(Bullet);
 			return;
 		}
 
