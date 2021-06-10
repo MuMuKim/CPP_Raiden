@@ -65,6 +65,7 @@ public:
 	//Screen에 상태를 보여주기 위한 함수
 	UFUNCTION(BluePrintImplementableEvent,Category = "PrintLog")
 	void PrintEnumDeta(EGameState value);
+
 public:
 	//캡슐화된 MState를 가져오기 위한 함수
 	EGameState GetState()
@@ -72,10 +73,8 @@ public:
 		return MState;
 	}
 	//캡슐화된 MState를 수정하기 위한 함수
-	EGameState SetState(EGameState s)
-	{
-		return MState = s;
-	}
+	void SetState(EGameState s);
+	
 
 private:
 	//상태변화를 관리하는 변수
@@ -86,4 +85,23 @@ private:
 	float ReadyTime = 2;
 	UPROPERTY()
 	float CrruntTime = 0;
+
+
+	//ReadyUI 공장
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = ture))
+	TSubclassOf<class UUserWidget> ReadyUIFactory;
+	//Ready UI를 재활용하기 위해 속성으로 등록
+	class UUserWidget* ReadyUI;
+
+	//StartUI 공장
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = ture))
+	TSubclassOf<class UUserWidget> StartUIFactory;
+	//Start UI를 재활용하기 위해 속성으로 등록
+	class UUserWidget* StartUI;
+
+	//GameOverUI 공장
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = ture))
+	TSubclassOf<class UUserWidget> GameOverUIFactory;
+	//Start UI를 재활용하기 위해 속성으로 등록
+	class UUserWidget* GameOvertUI;
 };

@@ -6,6 +6,7 @@
 #include <EngineUtils.h>
 #include <Kismet/GameplayStatics.h>
 #include "PlayerCPP.h"
+#include <Blueprint/UserWidget.h>
 
 ACRaidenGameMode::ACRaidenGameMode()
 {
@@ -14,6 +15,7 @@ ACRaidenGameMode::ACRaidenGameMode()
 	//Player가 들어가있음.
 	DefaultPawnClass = NULL;
 }
+#pragma region Tick(Page)
 
 void ACRaidenGameMode::Tick(float DeltaSeconds)
 {
@@ -45,8 +47,21 @@ void ACRaidenGameMode::ReadyPage(float DeltaSeconds)
 	if (CrruntTime >= ReadyTime)
 	{
 		MState = EGameState::Playing;
-
+		
 		CrruntTime = 0;
+		//ReadyUI가 있다면 Playing으로 넘어갈 시 UI를 꺼준다
+		if (ReadyUI)
+		{
+			//Ready UI를 꺼준 후,
+			ReadyUI->RemoveFromViewport();			
+		}
+
+		//StartUI가 있다면 Playing으로 넘어갈 시 UI를 켜준다
+		if (StartUI)
+		{
+			//Ready UI를 꺼준 후,
+			StartUI->AddToViewport();
+		}
 	}
 }
 
@@ -54,6 +69,17 @@ void ACRaidenGameMode::ReadyPage(float DeltaSeconds)
 void ACRaidenGameMode::PlayingPage()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Playing STATE"));
+
+	//현재 시간을 만들어주고,
+	CrruntTime += GetWorld()->GetDeltaSeconds();
+	//경과시간이 된다면
+	if (CrruntTime >= 1)
+	{
+		//StartUI를 꺼준다.
+		StartUI->RemoveFromViewport();
+
+		CrruntTime = 0;
+	}
 }
 
 void ACRaidenGameMode::GameOverPage()
@@ -68,6 +94,7 @@ void ACRaidenGameMode::GameOverPage()
 		ResetLevel();
 	}
 }
+#pragma endregion
 
 void ACRaidenGameMode::InitGameState()
 {
@@ -108,17 +135,48 @@ void ACRaidenGameMode::InitGameState()
 
 	//4 마지막으로 상태를 Ready 로 전환해준다
 	MState = EGameState::Ready;
+
+	//ReadyUI가 있다면 ReadyUI화면에 출력
+	if (ReadyUI)
+	{
+		//화면에 보이게하기
+		ReadyUI->AddToViewport();
+	}
 }
 
 void ACRaidenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//태어날 때 총알 탄창에 넣어놓기
 	for (int32 i = 0; i < BulletPoolSize; ++i)
 	{
 		ABulletCPP* Bullet = CreateBullet();
 
 		ADDBullet(Bullet);
+	}
+
+	//방어코드(ReadyUIFactory가 Null이 아니라면)
+	if (ReadyUIFactory)
+	{
+		//ReadyUI를 만들고 싶다
+		ReadyUI = CreateWidget<UUserWidget>(GetWorld(), ReadyUIFactory);
+		//화면에 보이게 하기
+		ReadyUI->AddToViewport();
+	}
+
+	//방어코드(ReadyUIFactory가 Null이 아니라면)
+	if (StartUIFactory)
+	{
+		//ReadyUI를 만들고 싶다
+		StartUI = CreateWidget<UUserWidget>(GetWorld(), StartUIFactory);
+	}
+
+	//방어코드(ReadyUIFactory가 Null이 아니라면)
+	if (GameOverUIFactory)
+	{
+		//ReadyUI를 만들고 싶다
+		GameOvertUI = CreateWidget<UUserWidget>(GetWorld(), GameOverUIFactory);
 	}
 }
 
@@ -156,4 +214,21 @@ ABulletCPP* ACRaidenGameMode::GetBullet()
 	
 	return Bullet;
 }
+
+void ACRaidenGameMode::SetState(EGameState s)
+{
+	MState = s;
+
+	//MStet가 GameOver상태가 되었다면
+	if (MState == EGameState::GameOver)
+	{
+		//게임을 일시정지 하고
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		//마우스커서를 보이게한다
+		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+		//GameOverUI를 보이게한다
+		GameOvertUI->AddToViewport();
+	}
+}
+
 
