@@ -33,7 +33,7 @@ public:
 	//UI Widjet 가져오기
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UButton* ReStart_Button;
-	UPROPERTY(BluePrintReadWrite, meta = (BindWiget))
+	UPROPERTY(BluePrintReadWrite, meta = (BindWidget))
 	class UButton* Quit_Button;
 
 };
