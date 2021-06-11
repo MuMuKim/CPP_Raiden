@@ -39,18 +39,11 @@ public:
 	UPROPERTY(VisibleAnywhere,Category = "Body")
 	class UArrowComponent* FirePosition;
 
-	//총알공장(Bullet Class를 가져와 쓸수있음)
-	/*UPROPERTY(EditAnywhere, Category = "Setting")
-	TSubclassOf<class ABulletCPP> BulletFactory;*/
-
-	//총알Sound
-	UPROPERTY(EditAnywhere,Category="Audio")
-	class USoundBase* BulletSound;
-
-	//사용자가 발사버튼을 누르면 Bullet을 발사하는 기능
-	void Fire();
-
 	//PlayerMove 컴포넌트 추가
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	class UPlayerMove* PlayerMove;
+
+	//PlayerFire 컴포넌트 추가
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	class UPlayerFire* PlayerFire;
 };
