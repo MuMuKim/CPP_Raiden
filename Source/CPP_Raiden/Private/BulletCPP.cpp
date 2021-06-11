@@ -35,6 +35,7 @@ void ABulletCPP::Tick(float DeltaTime)
 
 	//πÊ«‚
 	FVector dir(0, 0, 1);
+	dir.Normalize();
 	//P = P0 + vt, Sweep(ture)
 	SetActorLocation(GetActorLocation() + dir * Speed * DeltaTime,true);
 

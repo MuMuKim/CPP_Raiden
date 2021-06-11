@@ -9,6 +9,8 @@
 #include <Blueprint/UserWidget.h>
 #include "ScoreCPP.h"
 #include "SaveData.h"
+#include <Engine/EngineTypes.h>
+#include <Engine/World.h>
 
 ACRaidenGameMode::ACRaidenGameMode()
 {
@@ -23,7 +25,7 @@ void ACRaidenGameMode::Tick(float DeltaSeconds)
 {
 
 	PrintEnumDeta(MState);
-	UE_LOG(LogTemp, Warning, TEXT("Tick STATE"));
+	//UE_LOG(LogTemp, Warning, TEXT("Tick STATE"));
 	// switch문으로 함수 이동제어문 만들기
 	switch (MState)
 	{
@@ -41,7 +43,7 @@ void ACRaidenGameMode::Tick(float DeltaSeconds)
 
 void ACRaidenGameMode::ReadyPage(float DeltaSeconds)
 {
-	UE_LOG(LogTemp, Warning, TEXT("READY STATE"));
+	//UE_LOG(LogTemp, Warning, TEXT("READY STATE"));
 
 	//경과 시간이 되면 PlayingPage로 넘어가고 싶다
 	CrruntTime += GetWorld()->GetDeltaSeconds();
@@ -70,7 +72,7 @@ void ACRaidenGameMode::ReadyPage(float DeltaSeconds)
 
 void ACRaidenGameMode::PlayingPage()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Playing STATE"));
+	//UE_LOG(LogTemp, Warning, TEXT("Playing STATE"));
 
 	//현재 시간을 만들어주고,
 	CrruntTime += GetWorld()->GetDeltaSeconds();
@@ -79,7 +81,6 @@ void ACRaidenGameMode::PlayingPage()
 	{
 		//StartUI를 꺼준다.
 		StartUI->RemoveFromViewport();
-
 		CrruntTime = 0;
 	}
 }
@@ -177,13 +178,18 @@ void ACRaidenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//태어날 때 총알 탄창에 넣어놓기
-	for (int32 i = 0; i < BulletPoolSize; ++i)
+	//(방어코드)
+	if (BulletFactory) //실행순서 1
 	{
-		ABulletCPP* Bullet = CreateBullet();
+		//태어날 때 총알 탄창에 넣어놓기
+		for (int32 i = 0; i < BulletPoolSize; ++i)
+		{
+			ABulletCPP* Bullet = CreateBullet();
 
-		ADDBullet(Bullet);
+			ADDBullet(Bullet);
+		}
 	}
+	
 
 	//방어코드(ReadyUIFactory가 Null이 아니라면)
 	if (ReadyUIFactory)
@@ -222,34 +228,35 @@ void ACRaidenGameMode::BeginPlay()
 	}
 }
 
-ABulletCPP* ACRaidenGameMode::CreateBullet()
+ABulletCPP* ACRaidenGameMode::CreateBullet() //실행순서 2
 {
-	//생성되는 위치에 다른 액터가 있더라도 생성시킨다.
 	FActorSpawnParameters pram;
+	//생성되는 위치에 다른액터가 있더라도 생성시킨다
 	pram.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	//월드 안에 있는 스폰액터 기능에 접근해 인자값으로 위치지정, Param이란 조건을 추가
-	auto Bullet = GetWorld()->SpawnActor<ABulletCPP>(BulletFactory, FVector::ZeroVector, FRotator::ZeroRotator);
+	//게임매니저(GetWorld)안에 있는 스폰액터기능에 접근해 인자값으로 위치를 지정해주고 pram이란 조건을 추가
+	auto Bullet = GetWorld()->SpawnActor<ABulletCPP>(BulletFactory, FVector::ZeroVector, FRotator::ZeroRotator, pram);
 
 	return Bullet;
 }
 
-void ACRaidenGameMode::ADDBullet(ABulletCPP* Bullet)
+void ACRaidenGameMode::ADDBullet(ABulletCPP* Bullet) //실행순서 3
 {
 	//같은놈은 넣지 않는 Uique
 	BulletPool.AddUnique(Bullet);
 	//총알을 비활성화 시킨다
 	SetBulletActive(Bullet, false);
 }
-
-void ACRaidenGameMode::SetBulletActive(ABulletCPP* Bullet, bool IsActive)
+	
+void ACRaidenGameMode::SetBulletActive(ABulletCPP* Bullet, bool IsActive) //실행순서 4
 {
 	Bullet->SetActorHiddenInGame(!IsActive); //게임에서 안보이게 할것이냐?
 	Bullet->SetActorEnableCollision(IsActive); //충돌을 킬것이냐?
 	Bullet->SetActorTickEnabled(IsActive); //실행 시킬것이냐?
+
 }
 
-ABulletCPP* ACRaidenGameMode::GetBullet()
+ABulletCPP* ACRaidenGameMode::GetBullet() //실행순서 5
 {
 	//총알을 탄창에서 하나씩 넣어 가져온다(return)
 	ABulletCPP* Bullet = BulletPool.Pop();

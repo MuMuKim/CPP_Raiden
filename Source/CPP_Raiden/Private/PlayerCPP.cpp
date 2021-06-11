@@ -79,7 +79,7 @@ void APlayerCPP::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	//총알발사 키입력 (IE_Pressed 누르는 순간에)
 	PlayerInputComponent->BindAction("Fire",IE_Pressed, this, &APlayerCPP::Fire);
-}
+}	
 //사용자가 좌우 키를 누르면 실행되는 함수
 void APlayerCPP::InputHorizontal(float Value)
 {
@@ -119,31 +119,38 @@ void APlayerCPP::Fire()
 	}
 	if (GameMode)
 	{
-		//GameMode의 GetBullet함수를 사용해 총알을 가져온다
-		auto Bullet = GameMode->GetBullet();
+		//gameMode의 GetBullet함수에 리턴값인 bullet을 받아와 bullet변수로 받아준다.
+		auto bullet = GameMode->GetBullet(); // 1발
 		//방어코드
-		if (Bullet == nullptr)
+		if (bullet == nullptr)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Bullet 1 NULL!!!!!!!!!!!!!"));
 			return;
 		}
-		//두번째 총알을 가져올 때 탄창에 더이상 총알이 없다면
-		//발사할 수 없기 때문에 첫번째 가져온 총알을 반납한다.
-		auto Bullet2 = GameMode->GetBullet();
-		if (Bullet2 == nullptr)
+		//두번째 총알을 가져올때 탄창에 더이상 총알이 없다면
+		//발사할 수 없기 때문에 첫번째 가져온 총알은 다시 탄창에 반납한다
+		auto bullet2 = GameMode->GetBullet(); // 2발
+		if (bullet2 == nullptr)
 		{
-			GameMode->ADDBullet(Bullet);
+			UE_LOG(LogTemp, Warning, TEXT("Bullet 2 NULL!!!!!!!!!!!!!"));
+			GameMode->ADDBullet(bullet);
 			return;
 		}
-
-		//가져온 총알을 활성화 시켜준다
-		GameMode->SetBulletActive(Bullet, true);
-		GameMode->SetBulletActive(Bullet2, true);
-
-		//위치시킨다
-		Bullet->SetActorLocation(FirePosition->GetComponentLocation()+FVector(0,-40,0));
-		Bullet2->SetActorLocation(FirePosition->GetComponentLocation()+FVector(0,40,0));
-		//총알발사 사운드
-		UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
+		
+		//첫번째 총알을 활성화 시켜준다
+		GameMode->SetBulletActive(bullet, true);
+		//첫번째 총알을 FirePosition의 Location값에서 +60해 배치시킨다
+		bullet->SetActorLocation(FirePosition->GetComponentLocation() + FVector(0, 60, 0));
+		bullet->SetActorRelativeRotation(FirePosition->GetComponentRotation());
+		UE_LOG(LogTemp, Warning, TEXT("Bullet 1 Setting Clear!!!!!!!!!!!!!"));
+		//두번째 총알을 활성화 시켜준다
+		GameMode->SetBulletActive(bullet2, true);
+		//두번째 총알을 FirePosition의 Location값에서 -60해 배치시킨다
+		bullet2->SetActorLocation(FirePosition->GetComponentLocation() + FVector(0, -60, 0));
+		bullet2->SetActorRelativeRotation(FirePosition->GetComponentRotation());
+		UE_LOG(LogTemp, Warning, TEXT("Bullet 2 Setting Clear!!!!!!!!!!!!!"));
 	}
+	//총알발사 사운드
+	UGameplayStatics::PlaySound2D(GetWorld(), BulletSound);
 }
 

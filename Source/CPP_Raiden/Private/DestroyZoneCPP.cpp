@@ -42,7 +42,7 @@ void ADestroyZoneCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
 
-	if (Bullet && IsValid(Bullet) && GameMode)
+	if (Bullet)
 	{
 		//ÀçÀåÀü
 		GameMode->ADDBullet(Bullet);

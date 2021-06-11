@@ -121,7 +121,7 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 	auto Bullet = Cast<ABulletCPP>(OtherActor);
 
 	auto GameMode = Cast<ACRaidenGameMode>(GetWorld()->GetAuthGameMode());
-	if (Bullet && GameMode)
+	if (Bullet)
 	{
 		//ÀçÀåÀü
 		GameMode->ADDBullet(Bullet);
