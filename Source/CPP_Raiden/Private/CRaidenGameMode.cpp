@@ -8,6 +8,7 @@
 #include "PlayerCPP.h"
 #include <Blueprint/UserWidget.h>
 #include "ScoreCPP.h"
+#include "SaveData.h"
 
 ACRaidenGameMode::ACRaidenGameMode()
 {
@@ -143,6 +144,33 @@ void ACRaidenGameMode::InitGameState()
 		//화면에 보이게하기
 		ReadyUI->AddToViewport();
 	}
+
+	//--------------------------------------------------------------------
+	//SaveData 로드하기
+	SaveData = Cast<USaveData>(UGameplayStatics::LoadGameFromSlot(TEXT("TopScore"), 0));
+
+	//먄약 저장데이터가 없다면
+	if (SaveData == nullptr)
+	{
+		//SaveData를 하나만든다
+		auto SaveGame = UGameplayStatics::CreateSaveGameObject(USaveData::StaticClass());
+		SaveData = Cast<USaveData>(SaveGame);
+		//0으로 초기화
+		SaveData->TopScore = 0;
+
+		//저장슬롯
+		UGameplayStatics::SaveGameToSlot(SaveData, TEXT("TopScore"), 0);
+	}
+	//TopScore에 로드된 데이터 할당
+	TopScore = SaveData->TopScore;
+
+	if (ScoreUI)
+	{
+		//UI에 TopScore출력
+		ScoreUI->PrintTopScore(TopScore);
+		//CurSore가 처음 0으로 출력되게
+		ScoreUI->PrintCurrentScore(CurScore);
+	}
 }
 
 void ACRaidenGameMode::BeginPlay()
@@ -185,7 +213,12 @@ void ACRaidenGameMode::BeginPlay()
 	//만약 ScoreUI가 잘 들어왔다면
 	if (ScoreUI)
 	{
+		//Socre UI를 보여주고
 		ScoreUI->AddToViewport();
+		//CurScore가 처음 0으로 나오게
+		ScoreUI->PrintCurrentScore(CurScore);
+		//TopScore를 출력
+		ScoreUI->PrintTopScore(TopScore);
 	}
 }
 
@@ -256,6 +289,9 @@ void ACRaidenGameMode::SetCurrentScore(int32 point)
 		TopScore = CurScore;
 		//Top Score 값 할당
 		ScoreUI->PrintTopScore(TopScore);
+
+		SaveData->TopScore = TopScore;
+		UGameplayStatics::SaveGameToSlot(SaveData, TEXT("TopScore"),0);
 	}
 }
 

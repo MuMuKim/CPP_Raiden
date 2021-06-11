@@ -62,6 +62,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PlayerFactory")
 	TSubclassOf<class APlayerCPP> PlayerFactory;
 
+	//SaveData 인스턴스를 변수로 기억
+	UPROPERTY()
+	class USaveData* SaveData;
+
 	//Screen에 상태를 보여주기 위한 함수
 	UFUNCTION(BluePrintImplementableEvent,Category = "PrintLog")
 	void PrintEnumDeta(EGameState value);
