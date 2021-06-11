@@ -74,6 +74,11 @@ public:
 	}
 	//캡슐화된 MState를 수정하기 위한 함수
 	void SetState(EGameState s);
+
+	//캡슐화된 현재점수에 Point를 넣을 함수
+	void SetCurrentScore(int32 point);
+	//캡슐화된 현재점수를 불러올 함수
+	int32 GetCurrentScore();
 	
 
 private:
@@ -104,4 +109,15 @@ private:
 	TSubclassOf<class UUserWidget> GameOverUIFactory;
 	//Start UI를 재활용하기 위해 속성으로 등록
 	class UUserWidget* GameOvertUI;
+
+	//현재 점수를 담는 변수
+	int32 CurScore = 0;
+	//최고 점수를 담는 변수
+	int32 TopScore = 0;
+	
+	//Score UI 공장
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = ture))
+	TSubclassOf<class UUserWidget> ScoreUIFactory;
+	//ScoreUI를 재활용하기 위해 속성으로 등록
+	class UScoreCPP* ScoreUI;
 };

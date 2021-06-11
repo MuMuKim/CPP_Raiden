@@ -138,6 +138,7 @@ void AEnemyCPP::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		OtherActor->Destroy();
 	}
+	GameMode->SetCurrentScore(GameMode->GetCurrentScore() + 1);
 	Destroy();
 }
 //Componunt 충돌 함수

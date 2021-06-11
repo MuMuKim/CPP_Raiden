@@ -7,6 +7,7 @@
 #include <Kismet/GameplayStatics.h>
 #include "PlayerCPP.h"
 #include <Blueprint/UserWidget.h>
+#include "ScoreCPP.h"
 
 ACRaidenGameMode::ACRaidenGameMode()
 {
@@ -178,6 +179,14 @@ void ACRaidenGameMode::BeginPlay()
 		//ReadyUI를 만들고 싶다
 		GameOvertUI = CreateWidget<UUserWidget>(GetWorld(), GameOverUIFactory);
 	}
+
+	//Score UI를 등록하고 생성
+	ScoreUI = CreateWidget<UScoreCPP>(GetWorld(), ScoreUIFactory);
+	//만약 ScoreUI가 잘 들어왔다면
+	if (ScoreUI)
+	{
+		ScoreUI->AddToViewport();
+	}
 }
 
 ABulletCPP* ACRaidenGameMode::CreateBullet()
@@ -231,4 +240,27 @@ void ACRaidenGameMode::SetState(EGameState s)
 	}
 }
 
+void ACRaidenGameMode::SetCurrentScore(int32 point)
+{
+	//현재점수 넣어주기
+	CurScore = point;
+	//UI에 표시해주기
+	//->Score UI Widget 에 값을 할당시켜준다
+	ScoreUI->PrintCurrentScore(CurScore);
+	
+	//TopScore
+	//->현재점수가 최고점수를 넘으면 
+	if (CurScore > TopScore)
+	{
+		//현재점수가 최고점수가 된다
+		TopScore = CurScore;
+		//Top Score 값 할당
+		ScoreUI->PrintTopScore(TopScore);
+	}
+}
+
+int32 ACRaidenGameMode::GetCurrentScore()
+{
+	return CurScore;
+}
 
